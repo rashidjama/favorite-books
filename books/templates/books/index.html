@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wall</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+  integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+</head>
+<body class="bg-light">
+  <nav class="bg-dark">
+  <div class="d-flex container text-white p-3">
+    <h4 class="mr-auto">Favorite Books</h4>
+    <i class="fas fa-user fa-1.5x mr-4 mt-2"> {{request.session.name}}</i>
+    <a href="/logout" class="btn btn-sm btn-dark text-white">Log out</a>
+  </div>
+  </nav>
+  {% if messages %}
+  <ul class="messages list-group mt-3 alert alert-danger mb-3 w-75 ml-4">
+    {% for message in messages %}
+    <li class="list-group-item" {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3>Add a Favorite Book.</h3>
+        <form action="/books/add_books" method="POST" class="form-group">
+          {% csrf_token %}
+          <label for="tl">Title</label>
+          <input type="text" name="title" id="tl" class="form-control title">
+          <label for="ds">Description</label>
+          <textarea name="des" id="ds" class="form-control"></textarea>
+          <input type="submit" value="Add Book" class="btn btn-outline-dark mt-2 w-100 submit">
+        </form>
+      </div>
+      <div class="col-sm-6">
+        <h4>All books</h4>
+        {% for book in books %}
+        <div class="border p-4">
+          <a href="/books/{{book.id}}">{{book.title}}</a>
+          <p>(Added by {{book.uploader.first_name}} {{book.uploader.last_name}})</p>
+
+          {% if current_user in book.users_who_like.all %}
+          <p class="font-italic text-secondary">(This is one of your favorites!)</p>
+          {% else %}
+          <a href="/books/fav/{{book.id}}" class="btn btn-outline-dark">Add to favorites</a>
+          {% endif %}
+        
+        </div>
+        <!--if the login user has no favorite back a button-->
+    
+        {% endfor %}
+      </div>
+  </div>
+  </div>
+  
+</body>
+</html>

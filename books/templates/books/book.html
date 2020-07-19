@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wall</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+  integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+</head>
+<body class="bg-light">
+  <nav class="bg-dark">
+  <div class="d-flex container text-white p-3">
+    <a href="/books/" class="mr-auto text-white d-2">Favorite Books</a>
+    <i class="fas fa-user fa-1.5x mr-4 mt-2"> {{request.session.name}}</i>
+    <a href="/logout" class="btn btn-sm btn-dark text-white">Log out</a>
+  </div>
+  </nav>
+  <div class="container">
+    {% if messages %}
+    <ul class="messages list-group mt-3 alert alert-danger mb-3 w-75 ml-4">
+      {% for message in messages %}
+      <li class="list-group-item" {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="row mt-5">
+      <div class="col-sm-6">
+        {% if cur_book.uploader.id == request.session.user_id%}
+        <form action="/books/update_book/{{cur_book.id}}" method="POST" class="form-group">
+          {% csrf_token %}
+          <input type="text" name="title" value="{{cur_book.title}}" class="form-control mb-2">
+          <p>Added by: {{cur_book.uploader.first_name}} {{cur_book.uploader.last_name}}</p>
+          <p>Added on {{cur_book.created_at}}</p>
+          <p>Last updated on {{cur_book.updated_at}}</p>
+          <label for="ds">Description</label>
+          <textarea name="des" id="ds" class="form-control mb-2">{{cur_book.description}}</textarea>
+          <input type="submit" value="Update" class="btn btn-outline-dark"> <a href="/books/delete_book/{{cur_book.id}}" class="btn btn-outline-danger">Delete</a>
+        </form>
+        {% else %}
+        <div class="border p-3">
+          <h4>{{cur_book.title}}</h4>
+          <p>Added by: {{cur_book.uploader.first_name}} {{cur_book.uploader.last_name}}</p>
+          <p>Added on {{cur_book.created_at}}</p>
+          <p>Last updated on {{cur_book.updated_at}}</p>
+          <p>Description: {{cur_book.description}}</p>
+        </div>
+
+        {% endif %}
+      </div>
+      <div class="col-sm-6">
+        <div class="border p-3">
+          <h4>Users who like this Book.</h4>
+          <ul>
+            {% for user in cur_book.users_who_like.all %}
+            {% if user.id == request.session.user_id %}
+            <li>{{user.first_name}} {{user.last_name}} <a href="/books/un_favorite/{{cur_book.id}}">Un Favorite</a></li>
+            {% else %}
+            <li>{{user.first_name}} {{user.last_name}}</li>
+            {% endif%}
+            {% endfor %}
+          </ul>
+            <a href="/books">Go Back</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  
+</body>
+</html>
